@@ -1,0 +1,56 @@
+Part 1 - Pizza API output
+
+HTTP/1.1 200 OK
+Connection: close
+Content-Type: application/json; charset=utf-8
+Date: Sun, 27 Sep 2026 01:52:27 GMT
+Server: Kestrel
+Transfer-Encoding: chunked
+
+[
+  {
+    "id": 1,
+    "name": "Classic Italian",
+    "isGlutenFree": false
+  },
+  {
+    "id": 2,
+    "name": "Veggie",
+    "isGlutenFree": true
+  },
+  {
+    "id": 3,
+    "name": "Brazilian Calabresa",
+    "isGlutenFree": false
+  }
+]
+
+Part 2 - Sales summary function
+
+void GenerateSalesSummaryReport(IEnumerable<string> salesFiles, string outputDirectory)
+{
+    var report = new StringBuilder();
+
+    report.AppendLine("Sales Summary");
+    report.AppendLine("--------------------------");
+    var Total = CalculateSalesTotal(salesFiles);
+    report.AppendLine($" Total Sales: {Total:C}");
+    report.AppendLine("Details: ");
+    foreach (var file in salesFiles)
+    {
+        var FileName = Path.GetFileName(file);
+        if (FileName == "sales.json")
+        {
+            var fileText = File.ReadAllText(file);
+            SalesData? data = JsonConvert.DeserializeObject<SalesData>(fileText);
+
+
+            report.AppendLine($"{FileName}: {data?.Total:C}");
+        }
+
+    }
+
+
+
+    File.WriteAllText(Path.Combine(outputDirectory, "salesSummary.txt"), report.ToString());
+}
